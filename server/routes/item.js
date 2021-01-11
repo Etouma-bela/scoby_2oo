@@ -33,7 +33,6 @@ router.patch("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  // Create a burger
   ItemModel.create(req.body)
     .then((itemDocument) => {
       res.status(201).json(itemDocument);
