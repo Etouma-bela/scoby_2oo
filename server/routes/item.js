@@ -33,6 +33,7 @@ router.patch("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
+  req.body.id_user = req.session.currentUser;
   ItemModel.create(req.body)
     .then((itemDocument) => {
       res.status(201).json(itemDocument);
