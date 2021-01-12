@@ -1,18 +1,52 @@
 import React, { Component } from "react";
 import LocationAutoComplete from "../LocationAutoComplete";
 import "../../styles/form.css";
+import apiHandler from "../../api/apiHandler";
 
 class ItemForm extends Component {
-  state = {};
+  // static contextType = UserContext;
+  state = {
+    name: "",
+    category: "",
+    quantity: 0,
+    address: "",
+    description: "",
+  };
 
-  handleChange(event) {
-    console.log("Wax On Wax Off");
-    this.setState({});
-  }
+  formRef = React.createRef();
+
+  handleChange = (event) => {
+    // console.log("Wax On Wax Off");
+    const key = event.target.name;
+    const value =
+      event.target.type === "file"
+        ? event.target.files[0]
+        : event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+
+    console.log("key :", key);
+    console.log("value :", value);
+    this.setState({ [key]: value });
+  };
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Wax On Wax Off");
+    // console.log("Wax On Wax Off");
+    // this.context.item({
+    //   name: this.state.name,
+    //   category: this.state.category,
+    //   quantity: this.state.quantity,
+    //   address: this.state.address,
+    //   description: this.state.description,
+    apiHandler
+      .addItem(this.state)
+      .then((data) => {
+        this.props.history.push("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     // In order to send back the data to the client, since there is an input type file you have to send the
     // data as formdata.
@@ -30,9 +64,10 @@ class ItemForm extends Component {
   };
 
   render() {
+    console.log("MY CURRENT STATE :", this.state);
     return (
       <div className="ItemForm-container">
-        <form className="form">
+        <form className="form" onSubmit={this.handleSubmit}>
           <h2 className="title">Add Item</h2>
 
           <div className="form-group">
@@ -41,9 +76,11 @@ class ItemForm extends Component {
             </label>
             <input
               id="name"
+              name="name"
               className="input"
               type="text"
-              onChange={this.handleChange}
+              value={this.state.name}
+              onChange={(event) => this.handleChange(event)}
               placeholder="What are you giving away ?"
             />
           </div>
@@ -53,7 +90,12 @@ class ItemForm extends Component {
               Category
             </label>
 
-            <select id="category" defaultValue="-1">
+            <select
+              id="category"
+              defaultValue="-1"
+              name="category"
+              onChange={(event) => this.handleChange(event)}
+            >
               <option value="-1" disabled>
                 Select a category
               </option>
@@ -68,7 +110,13 @@ class ItemForm extends Component {
             <label className="label" htmlFor="quantity">
               Quantity
             </label>
-            <input className="input" id="quantity" type="number" />
+            <input
+              className="input"
+              id="quantity"
+              type="number"
+              name="quantity"
+              onChange={(event) => this.handleChange(event)}
+            />
           </div>
 
           <div className="form-group">
@@ -84,8 +132,11 @@ class ItemForm extends Component {
             </label>
             <textarea
               id="description"
+              name="description"
               className="text-area"
               placeholder="Tell us something about this item"
+              onChange={this.handleChange}
+              value={this.state.description}
             ></textarea>
           </div>
 
